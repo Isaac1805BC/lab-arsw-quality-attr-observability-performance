@@ -1,6 +1,6 @@
 # Laboratorio de Observabilidad y Rendimiento — ARSW 2026-2
 
-**Equipo:** Equipo 01 · **Integrante:** Isaac Burgos · **Fecha:** 2026-10-24  
+**Equipo:** Equipo 01 · **Integrante:** Isaac Burgos , Tomas Olaya Diaz· **Fecha:** 2026-10-24  
 **Entorno:** Linux (CachyOS 7.2.6), CPU x86-64, RAM disponible ≥ 4 GB para Docker  
 **Versiones:** Docker Engine 27.x · Compose v2 · Python 3.12  
 **Hipótesis:** A 20 req/s el servidor cumple los umbrales (P95 < 500 ms, errores < 1 %); a cargas mayores los ocho cupos se agotan y el servidor empieza a rechazar solicitudes con HTTP 503.

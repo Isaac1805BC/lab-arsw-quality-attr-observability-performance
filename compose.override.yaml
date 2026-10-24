@@ -1,0 +1,6 @@
+# ARSW k6 JSON addon
+services:
+  k6-results:
+    build: ./k6-grafana
+    volumes:
+      - ./results:/results:ro

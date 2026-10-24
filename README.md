@@ -73,11 +73,11 @@ Se ejecutó `python scripts/lab.py test all` para lanzar los cuatro perfiles sec
 
 | Ejecución (UTC) | Tasa ofrecida req/s | Throughput real req/s | P95 k6 (ms) | P95 servidor (s) | Error % | Iteraciones descartadas | Umbrales OK |
 |---|---|---|---|---|---|---|---|
-| **carga** `T133832` | 20 | **20.0** | **121.9** | 0.148 | **0 %** | 0 | ✅ |
-| **estres base** `T133933` | 20 → 120 → 20 | **59.1** | **121.2** | 0.148 | **20.38 %** | 0 | ❌ |
-| **pico** `T134134` | 20 → 160 → 20 | **51.0** | **121.1** | 0.148 | **38.52 %** | 0 | ❌ |
-| **duracion** `T134305` | 20 | **20.0** | **121.1** | 0.148 | **0 %** | 0 | ✅ |
-| **estres mejora** `T134939` | 20 → 120 → 20 | **59.1** | **61.3** | ~0.061 | **0 %** | 0 | ✅ |
+| **carga** `T133832` | 20 | **20.0** | **121.9** | 0.148 | **0 %** | 0 | OK |
+| **estres base** `T133933` | 20 → 120 → 20 | **59.1** | **121.2** | 0.148 | **20.38 %** | 0 | FALLO |
+| **pico** `T134134` | 20 → 160 → 20 | **51.0** | **121.1** | 0.148 | **38.52 %** | 0 | FALLO |
+| **duracion** `T134305` | 20 | **20.0** | **121.1** | 0.148 | **0 %** | 0 | OK |
+| **estres mejora** `T134939` | 20 → 120 → 20 | **59.1** | **61.3** | ~0.061 | **0 %** | 0 | OK |
 
 > Los archivos JSON correspondientes se encuentran en la carpeta `results/`.  
 > El código de salida 99 de k6 en estrés y pico indica umbrales incumplidos esperados.
@@ -93,9 +93,9 @@ Se ejecutó `python scripts/lab.py test all` para lanzar los cuatro perfiles sec
 | Checks pasados / fallados | 1 201 / 0 |
 | Tasa de error | **0 %** |
 | Duración avg / P95 / P99 / max | 121.0 / **121.9** / 122.7 / 126.4 ms |
-| Umbral `p(95)<500` | ✅ |
-| Umbral `rate<0.01` (errores) | ✅ |
-| Umbral `rate>0.99` (checks) | ✅ |
+| Umbral `p(95)<500` | OK |
+| Umbral `rate<0.01` (errores) | OK |
+| Umbral `rate>0.99` (checks) | OK |
 
 #### Estrés base (20 → 60 → 120 → 20 req/s · 120 s)
 
@@ -106,8 +106,8 @@ Se ejecutó `python scripts/lab.py test all` para lanzar los cuatro perfiles sec
 | Checks pasados / fallados | 5 653 / **1 447** |
 | Tasa de error HTTP 503 | **20.38 %** |
 | Duración avg / P95 / P99 / max | 96.4 / **121.2** / 121.8 / 123.8 ms |
-| Umbral `rate<0.01` (errores) | ❌ |
-| Umbral `rate>0.99` (checks) | ❌ |
+| Umbral `rate<0.01` (errores) | FALLO |
+| Umbral `rate>0.99` (checks) | FALLO |
 
 #### Pico (20 → 160 → 20 req/s · 90 s)
 
@@ -118,8 +118,8 @@ Se ejecutó `python scripts/lab.py test all` para lanzar los cuatro perfiles sec
 | Checks pasados / fallados | 2 828 / **1 772** |
 | Tasa de error HTTP 503 | **38.52 %** |
 | Duración avg / P95 / P99 / max | 74.5 / **121.1** / 121.8 / 126.3 ms |
-| Umbral `rate<0.01` (errores) | ❌ |
-| Umbral `rate>0.99` (checks) | ❌ |
+| Umbral `rate<0.01` (errores) | FALLO |
+| Umbral `rate>0.99` (checks) | FALLO |
 
 #### Duración (20 req/s · 240 s)
 
@@ -130,8 +130,8 @@ Se ejecutó `python scripts/lab.py test all` para lanzar los cuatro perfiles sec
 | Checks pasados / fallados | 4 801 / 0 |
 | Tasa de error | **0 %** |
 | Duración avg / P95 / P99 / max | 120.9 / **121.1** / 122.3 / 123.6 ms |
-| Umbral `p(95)<500` | ✅ |
-| Umbral `rate<0.01` (errores) | ✅ |
+| Umbral `p(95)<500` | OK |
+| Umbral `rate<0.01` (errores) | OK |
 
 ![Inicio de pruebas test all](capturas/lab_page-3.png)
 
@@ -161,7 +161,7 @@ Al reducir la espera simulada de 120 ms a 60 ms manteniendo 8 cupos, la capacida
 | Checks pasados | 5 653 (79.6 %) | 7 100 (100 %) |
 | P95 k6 | 121.2 ms | **61.3 ms** |
 | Duración avg | 96.4 ms | **61.0 ms** |
-| Umbrales | ❌ | ✅ |
+| Umbrales | FALLO | OK |
 
 La predicción **se cumplió**: al reducir la espera a la mitad, el P95 bajó de 121 ms a 61 ms y los errores cayeron de 20.38 % a 0 %. La ocupación de cupos nunca llegó al límite, lo que confirma que el cuello de botella era el tiempo de servicio y no el número de cupos en sí.
 
@@ -182,15 +182,11 @@ La predicción **se cumplió**: al reducir la espera a la mitad, el P95 bajó de
 
 ### Pregunta 1 — P95 frente a promedio
 
-> *¿Qué significa P95 y por qué un promedio bajo puede esconder solicitudes lentas? Interprete su P95 de carga.*
-
 El percentil 95 indica que el 95 % de las solicitudes se completaron en ese tiempo o menos; el 5 % restante tardó más. El promedio oculta los valores atípicos porque los extremos del 5 % alto se diluyen al promediar con el 95 % rápido. En la prueba de **carga (20 req/s, 60 s)**, el P95 fue **121.9 ms** y el promedio **121.0 ms**: la diferencia es pequeña porque la carga es estable y el tiempo de servicio está dominado por la espera artificial de 120 ms. Ambos valores están muy por debajo del umbral de 500 ms, lo que confirma que el servidor cumple el objetivo normal.
 
 ---
 
 ### Pregunta 2 — Disponibilidad funcional frente a lectura de métricas
-
-> *¿Por qué `up` puede valer 1 y el sondeo funcional 0?*
 
 `up{job="app"}` vale 1 cuando Prometheus logra raspar el endpoint `/metrics`; solo verifica que el proceso responde en ese puerto. `lab_probe_success` vale 1 cuando la sonda independiente puede completar una consulta real a `/ready` y obtener `{"ready": true}`. Durante la falla (`python scripts/lab.py fault`), el servidor mantuvo `/metrics` activo (razón: proceso vivo) pero devolvió `{"ready": false}` en `/ready`, haciendo que la sonda funcional cayera a 0 mientras `up` seguía en 1. **Para informar al usuario sobre disponibilidad real se usaría `lab_probe_success`**, ya que refleja si la funcionalidad de negocio está operativa, no solo si el proceso existe.
 
@@ -198,11 +194,9 @@ El percentil 95 indica que el 95 % de las solicitudes se completaron en ese tiem
 
 ### Pregunta 3 — Cuatro tipos de prueba y sus observaciones
 
-> *¿Cuál es la diferencia entre carga, estrés, pico y duración?*
-
 | Tipo | Propósito | Observación concreta en este lab |
 |---|---|---|
-| **Carga** | Verificar cumplimiento en condiciones normales | 20 req/s · 60 s → P95 = 121.9 ms · 0 % errores · umbrales ✅ |
+| **Carga** | Verificar cumplimiento en condiciones normales | 20 req/s · 60 s → P95 = 121.9 ms · 0 % errores · umbrales OK |
 | **Estrés** | Encontrar el punto de degradación | Al superar ~67 req/s (capacidad teórica) los cupos se agotan y HTTP 503 ↑ a 20.38 % |
 | **Pico** | Medir respuesta ante un salto abrupto | De 20 a 160 req/s instantáneamente → 38.52 % de errores · el servidor no absorbe la ráfaga |
 | **Duración** | Detectar deriva o fugas a carga constante | 4 min a 20 req/s → P95 estable en 121.1 ms · sin crecimiento de latencia · sin errores |
@@ -211,15 +205,11 @@ El percentil 95 indica que el 95 % de las solicitudes se completaron en ese tiem
 
 ### Pregunta 4 — CPU baja y rechazos: ¿qué limitación existe?
 
-> *Si CPU está baja y aumentan rechazos, ¿qué otra limitación puede existir?*
-
 La CPU del proceso permaneció en ≈ 1.73 % durante las pruebas, muy por debajo de cualquier límite de cómputo. El cuello de botella es la **concurrencia limitada a 8 cupos**: cada solicitud ocupa un cupo durante 120 ms (espera simulada). La capacidad máxima teórica es `8 cupos / 0.120 s = 67 req/s`; al superar ese umbral, los cupos se agotan y las solicitudes adicionales reciben HTTP 503 inmediatamente (tiempo ≈ 0 ms). Esto explica el promedio de 96.4 ms en estrés: el 79.6 % de solicitudes exitosas tardaron ~121 ms y el 20.4 % rechazadas tardaron ~0 ms. Los **VUs** son trabajadores disponibles para generar tráfico; cuando hay más VUs que cupos disponibles, los VUs se quedan esperando o reciben errores. La espera larga + cupos fijos es el límite, no la CPU.
 
 ---
 
 ### Pregunta 5 — ¿La mejora cumplió la predicción?
-
-> *¿Qué experimento adicional necesitaría para afirmar escalabilidad o estabilidad prolongada?*
 
 La mejora **sí cumplió la predicción**: la capacidad teórica subió de ~67 req/s a ~133 req/s, la tasa de error cayó de 20.38 % a 0 % y el P95 bajó de 121 ms a 61 ms con el mismo perfil de estrés. Sin embargo, la intervención **emula** una mejora de la dependencia (reducir delay), no una optimización real de código ni escalamiento horizontal. Para afirmar **escalabilidad**, se necesitaría escalar el número de cupos o instancias y repetir el perfil de pico (160 req/s) para comprobar que el throughput crece proporcionalmente. Para afirmar **estabilidad prolongada**, se necesitaría una prueba de resistencia (*soak test*) de al menos 30–60 minutos a carga constante, monitoreando crecimiento de latencia, consumo de memoria y posibles fugas; cuatro minutos (perfil `duracion`) son insuficientes para esa conclusión.
 
